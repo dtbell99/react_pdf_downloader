@@ -51,8 +51,9 @@ class App extends Component {
     return (
       <div className="App">
         <select onChange={(evt) => this.updateState(evt)} name="requestedFile">
-          <option value="customer-is-sometimes-right.pdf">Customer is sometimes right</option>
-          <option value="cat_scan.pdf">Cat scan</option>
+          <option value="customer-is-sometimes-right.pdf">PDF: Customer is sometimes right</option>
+          <option value="cat_scan.pdf">PDF: Cat scan</option>
+          <option value="screenshot.png">PNG: App Screenshot</option>
         </select>
         <a href="#download" onClick={this.getFile}>Download File</a>
         <br /><br />
