@@ -1,17 +1,22 @@
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var path = require('path');
+var fs = require('fs')
 
 app.use(bodyParser.json());
 
 app.post("/pdfservice", (request, response) => {
-    console.log("Body:" + JSON.stringify(request.body))
-    console.log("/pdfservice")
-    var pdf = fs.readFileSync('test.pdf', 'utf8');
-    response.setHeader("Content-type", "application/pdf")
-
+    var requestedPdf = request.body.requestedPdf
+    console.log("Client Requested : " + requestedPdf)
+    var filePath = path.join(__dirname, requestedPdf);
+    var pdf = fs.statSync(filePath);
+    var readStream = fs.createReadStream(filePath);
+    response.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdf.size
+    });
+    readStream.pipe(response);
 })
 
 app.use(function (req, res, next) {
