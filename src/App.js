@@ -5,7 +5,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      requestedPdf: "customer-is-sometimes-right.pdf"
+      requestedFile: "customer-is-sometimes-right.pdf"
     }
   }
 
@@ -16,20 +16,18 @@ class App extends Component {
     })
   }
 
-  getPDF = async () => {
-    console.log("get pdf")
-    var requestedPdf = this.state.requestedPdf
-    var request = new Request("/pdfservice", {
+  getFile = async () => {
+    var request = new Request("/fileservice", {
       method: 'POST',
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ "requestedPdf": requestedPdf })
+      body: JSON.stringify({ "requestedFile": this.state.requestedFile })
     })
     try {
       const payload = await fetch(request)
       const blob = await (payload.blob())
-      var blobData = new Blob([blob], { type: "application/pdf" })
+      var blobData = new Blob([blob], { type: "application/octet-stream" })
       //IE CODE
       if (window.navigator && window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveOrOpenBlob(blobData);
@@ -38,7 +36,7 @@ class App extends Component {
       const data = window.URL.createObjectURL(blobData);
       var link = document.createElement('a');
       link.href = data;
-      link.download = requestedPdf
+      link.download = this.state.requestedFile
       link.click();
       setTimeout(function () {
         // FIREFOX CODE
@@ -52,13 +50,13 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <select onChange={(evt) => this.updateState(evt)} name="requestedPdf">
+        <select onChange={(evt) => this.updateState(evt)} name="requestedFile">
           <option value="customer-is-sometimes-right.pdf">Customer is sometimes right</option>
           <option value="cat_scan.pdf">Cat scan</option>
         </select>
-        <a href="#download" onClick={this.getPDF}>Download PDF</a>
+        <a href="#download" onClick={this.getFile}>Download File</a>
         <br /><br />
-        <i>PDF files came from: http://www.pdffun.com</i>
+
       </div>
     );
   }

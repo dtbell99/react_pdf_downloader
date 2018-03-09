@@ -3,18 +3,22 @@ var bodyParser = require('body-parser');
 var app = express();
 var path = require('path');
 var fs = require('fs')
+var fileType = require('file-type');
+var readChunk = require('read-chunk');
 
 app.use(bodyParser.json());
 
-app.post("/pdfservice", (request, response) => {
-    var requestedPdf = request.body.requestedPdf
-    console.log("Client Requested : " + requestedPdf)
-    var filePath = path.join(__dirname, requestedPdf);
-    var pdf = fs.statSync(filePath);
+app.post("/fileservice", (request, response) => {
+    var requestedFile = request.body.requestedFile
+    console.log("Client Requested : " + requestedFile)
+    var filePath = path.join(__dirname, requestedFile);
+    var f = fs.statSync(filePath);
     var readStream = fs.createReadStream(filePath);
+    const buffer = readChunk.sync(requestedFile, 0, 4100);
+    var mime = fileType(buffer).mime
     response.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Length': pdf.size
+        'Content-Type': mime,
+        'Content-Length': f.size
     });
     readStream.pipe(response);
 })
